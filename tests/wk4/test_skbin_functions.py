@@ -1,8 +1,8 @@
 import pytest
-import skbin1
+import skbin1  # import only skbin1 since it doesn't add any new functions in skbin2
 
 
-class TestSKBin1:
+class TestSKBinFunctions:
     def setup_method(self, method):
         self.menu = [
             "plain coffee",
