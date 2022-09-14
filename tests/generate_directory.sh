@@ -12,3 +12,5 @@ do
     echo "+ $line"
     mkdir -p $1/submissions/$line
 done
+echo "Copying template scripts..."
+cp ../templates/*.sh $1/
