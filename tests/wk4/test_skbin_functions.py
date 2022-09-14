@@ -106,8 +106,6 @@ class TestSKBinFunctions:
                 syrup, required_syrup = self.get_syrup(drink)
                 _, required_base = self.get_base(drink, 20 if syrup else 30)
 
-                assert skbin1.get_ingredients(drink) == (required_base, required_syrup)
-
                 assert (
                     skbin1.check_stock(
                         base_stock, syrup_stock, required_base, required_syrup
