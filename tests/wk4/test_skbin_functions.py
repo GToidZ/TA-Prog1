@@ -4,9 +4,6 @@ import skbin1
 
 class TestSKBin1:
     def setup_method(self, method):
-        #  1  2  3  4  5  6
-        #  7  8  9 10 11 12
-        # 13 14 15 16 17
         self.menu = [
             "plain coffee",
             "caramel coffee",
