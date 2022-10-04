@@ -8,48 +8,6 @@ from difflib import SequenceMatcher
 
 class TestManageTrain(unittest.TestCase):
 
-    def setUp(self):
-        # self.station_fees, self.station_indexes = read_stations('south_stations.txt')
-        # self.TOTAL_NUM_STATIONS = len(station_indexes)
-        # self.train_seats, self.train_seat_classes = read_seats('south_train_seats.txt')
-        # read_reserved_tickets('south_reserved_tickets.txt', self.train_seats)
-
-        self.station_fees = {'Bangkok': [0, 0], 'Sam Sen': [800, 600], 'Bang Sue Junction': [800, 600],
-                             'Bang Bamru': [820, 610], 'Sala Ya': [830, 620], 'Nakhon Pathom': [860, 630],
-                             'Ratchaburi': [900, 650], 'Phetchaburi': [950, 680], 'Hua Hin': [1000, 700],
-                             'Bang Saphan Yai': [1100, 780], 'Chumphon': [1200, 800], 'Surat Thani': [1300, 900],
-                             'Thung Song Junction': [1400, 950], 'Phattalung': [1500, 980],'Hat Yai Junction': [1600, 1000]}
-
-        self.station_indexes = {'Bangkok': 0, 'Sam Sen': 1, 'Bang Sue Junction': 2, 'Bang Bamru': 3,
-                                'Sala Ya': 4, 'Nakhon Pathom': 5, 'Ratchaburi': 6, 'Phetchaburi': 7,
-                                'Hua Hin': 8, 'Bang Saphan Yai': 9, 'Chumphon': 10, 'Surat Thani': 11,
-                                'Thung Song Junction': 12, 'Phattalung': 13, 'Hat Yai Junction': 14}
-
-        self.TOTAL_NUM_STATIONS = len(self.station_indexes)
-
-        self.train_seats = {'1A': [{'origin': 'Bangkok', 'dest': 'Nakhon Pathom'},
-                                   {'origin': 'Ratchaburi', 'dest': 'Hua Hin'}],
-                            '1B': [{'origin': 'Bangkok', 'dest': 'Hua Hin'}],
-                            '1C': [{'origin': 'Bangkok', 'dest': 'Surat Thani'}],
-                            '1D': [{'origin': 'Bangkok', 'dest': 'Hat Yai Junction'}],
-                            '1E': [],
-                            '1F': [],
-                            '2A': [{'origin': 'Bang Sue Junction', 'dest': 'Phetchaburi'}],
-                            '2B': [{'origin': 'Sala Ya', 'dest': 'Ratchaburi'},
-                                   {'origin': 'Bang Saphan Yai', 'dest': 'Thung Song Junction'}],
-                            '2C': [{'origin': 'Sam Sen', 'dest': 'Nakhon Pathom'},
-                                   {'origin': 'Hua Hin', 'dest': 'Hat Yai Junction'}],
-                            '2D': [{'origin': 'Ratchaburi', 'dest': 'Hat Yai Junction'}],
-                            '2E': [{'origin': 'Phattalung', 'dest': 'Hat Yai Junction'}],
-                            '2F': [{'origin': 'Bangkok', 'dest': 'Phetchaburi'},
-                                   {'origin': 'Hua Hin', 'dest': 'Hat Yai Junction'}],
-                            '2G': [],
-                            '2H': []}
-
-        self.train_seat_classes = [1, 2]
-
-        read_reserved_tickets('south_reserved_tickets.txt', self.train_seats)
-
     @patch('sys.stdout', new_callable=io.StringIO)
     @patch('builtins.input', side_effect=[-1, 15, 14])
     def test_read_origin(self, _input, output):
@@ -113,14 +71,14 @@ class TestManageTrain(unittest.TestCase):
 
     def test_get_station_index(self):
         for i in range(TOTAL_NUM_STATIONS):
-            station_name = list(self.station_indexes.keys())[i]
-            output = get_station_index(self.station_indexes, station_name)
+            station_name = list(station_indexes.keys())[i]
+            output = get_station_index(station_indexes, station_name)
             self.assertEqual(i, output)
 
     def test_get_station_name(self):
         for i in range(TOTAL_NUM_STATIONS):
-            station_name = list(self.station_indexes.keys())[i]
-            output = get_station_name(self.station_indexes, i)
+            station_name = list(station_indexes.keys())[i]
+            output = get_station_name(station_indexes, i)
             self.assertEqual(station_name, output)
 
     def test_check_reserved_routes(self):
