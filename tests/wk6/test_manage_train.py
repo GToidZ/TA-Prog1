@@ -120,16 +120,16 @@ class TestManageTrain(unittest.TestCase):
     def test_get_ticket_price(self):
         # base case
         output = get_ticket_price({'AA': 0, 'BB': 1, 'CC': 2},
-            {'AA': [0, 0], 'BB': [200, 100], 'CC': [275, 150]},
-            0, 1, 2)
+                                  {'AA': [0, 0], 'BB': [200, 100], 'CC': [275, 150]},
+                                  0, 1, 2)
         self.assertEqual(output, 100)
         output = get_ticket_price({'AA': 0, 'BB': 1, 'CC': 2},
-            {'AA': [0, 0], 'BB': [200, 100], 'CC': [269, 150]},
-            1, 2, 1)
+                                  {'AA': [0, 0], 'BB': [200, 100], 'CC': [269, 150]},
+                                  1, 2, 1)
         self.assertEqual(output, 69)
         output = get_ticket_price({'AA': 0, 'BB': 1, 'CC': 2},
-            {'AA': [0, 0], 'BB': [200, 100], 'CC': [275, 160]},
-            1, 2, 2)
+                                  {'AA': [0, 0], 'BB': [200, 100], 'CC': [275, 160]},
+                                  1, 2, 2)
         self.assertEqual(output, 60)
 
     def test_check_available_seats(self):
@@ -201,7 +201,7 @@ class TestManageTrain(unittest.TestCase):
 
     @patch('sys.stdout', new_callable=io.StringIO)
     @patch('builtins.input', side_effect=['1G', '1E', 2, 13])
-    def test_cancel(self, _input, output):
+    def test_cancel1(self, _input, output):
         demo_train_seats = copy.deepcopy(train_seats)
         correct_train_seats = copy.deepcopy(train_seats)
         val_returned = cancel(demo_train_seats, station_indexes)
@@ -214,12 +214,68 @@ class TestManageTrain(unittest.TestCase):
         self.assertIs(val_returned, None)
         self.assertDictEqual(demo_train_seats, correct_train_seats)
 
-    def test_show_ticket_prices(self):
-        pass
+    @patch('sys.stdout', new_callable=io.StringIO)
+    @patch('builtins.input', side_effect=['2B', 4, 6])
+    def test_cancel2(self, _input, output):
+        demo_train_seats = copy.deepcopy(train_seats)
+        correct_train_seats = copy.deepcopy(train_seats)
+        val_returned = cancel(demo_train_seats, station_indexes)
+        correct_output = "Seats are ['1A', '1B', '1C', '1D', '1E', '1F', '2A', '2B', '2C', '2D', '2E', '2F', '2G','2H']\n" \
+                         "Tickets issued at 2B: [Sala Ya(4)-Ratchaburi(6)], [Bang Saphan Yai(9)-Thung Song Junction(12)], \n" \
+                         "After cancellation: \n" \
+                         "Tickets issued at 2B: [Bang Saphan Yai(9)-Thung Song Junction(12)], \n"
+        similarily = SequenceMatcher(None, output.getvalue(), correct_output).ratio()
+        self.assertGreaterEqual(similarily, 0.8)
+        self.assertIs(val_returned, None)
+        correct_train_seats['2B'].pop(0)
+        self.assertDictEqual(demo_train_seats, correct_train_seats)
 
-    def clear_tickets(self):
-        pass
+    @patch('sys.stdout', new_callable=io.StringIO)
+    def test_show_ticket_prices(self, output):
+        demo_train_seats = copy.deepcopy(train_seats)
+        show_ticket_prices(demo_train_seats, station_indexes, station_fees)
+        correct_output = "1A: [Bangkok(0)-Nakhon Pathom(5)-860], [Ratchaburi(6)-Hua Hin(8)-100], \n" \
+                         "1B: [Bangkok(0)-Hua Hin(8)-1000], \n" \
+                         "1C: [Bangkok(0)-Surat Thani(11)-1300], \n" \
+                         "1D: [Bangkok(0)-Hat Yai Junction(14)-1600], \n" \
+                         "1E: \n" \
+                         "1F: \n" \
+                         "2A: [Bang Sue Junction(2)-Phetchaburi(7)-80], \n" \
+                         "2B: [Sala Ya(4)-Ratchaburi(6)-30], [Bang Saphan Yai(9)-Thung Song Junction(12)-170], \n" \
+                         "2C: [Sam Sen(1)-Nakhon Pathom(5)-30], [Hua Hin(8)-Hat Yai Junction(14)-300], \n" \
+                         "2D: [Ratchaburi(6)-Hat Yai Junction(14)-350], \n" \
+                         "2E: [Phattalung(13)-Hat Yai Junction(14)-20], \n" \
+                         "2F: [Bangkok(0)-Phetchaburi(7)-680], [Hua Hin(8)-Hat Yai Junction(14)-300], \n" \
+                         "2G: \n" \
+                         "2H: \n"
+        similarily = SequenceMatcher(None, output.getvalue(), correct_output).ratio()
+        self.assertGreaterEqual(similarily, 0.9)
 
+    @patch('sys.stdout', new_callable=io.StringIO)
+    def test_clear_tickets(self, output):
+        demo_train_seats = copy.deepcopy(train_seats)
+        correct_train_seats = copy.deepcopy(train_seats)
+        for seat_id in correct_train_seats.keys():
+            correct_train_seats[seat_id] = []
+        clear_tickets(demo_train_seats)
+        correct_output = "After clearing all tickets\n" \
+                         "1A: \n" \
+                         "1B: \n" \
+                         "1C: \n" \
+                         "1D: \n" \
+                         "1E: \n" \
+                         "1F: \n" \
+                         "2A: \n" \
+                         "2B: \n" \
+                         "2C: \n" \
+                         "2D: \n" \
+                         "2E: \n" \
+                         "2F: \n" \
+                         "2G: \n" \
+                         "2H: \n"
+        similarily = SequenceMatcher(None, output.getvalue(), correct_output).ratio()
+        self.assertGreaterEqual(similarily, 0.9)
+        self.assertDictEqual(demo_train_seats, correct_train_seats)
 # station_fees, station_indexes = read_stations('south_stations.txt')
 # print(station_fees)        # you can uncomment this line to see output
 # print(station_indexes)     # you can uncomment this line to see output
