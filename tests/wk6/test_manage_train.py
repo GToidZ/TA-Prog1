@@ -30,26 +30,6 @@ class TestManageTrain(unittest.TestCase):
 
     @patch('sys.stdout', new_callable=io.StringIO)
     def test_show_seats(self, output):
-        # result = show_seats({
-        #                     '1A': [{'origin': 'Bangkok', 'dest': 'Nakhon Pathom'},
-        #                            {'origin': 'Ratchaburi', 'dest': 'Hua Hin'}],
-        #                     '1B': [{'origin': 'Bangkok', 'dest': 'Hua Hin'}],
-        #                     '1C': [{'origin': 'Bangkok', 'dest': 'Surat Thani'}],
-        #                     '1D': [{'origin': 'Bangkok', 'dest': 'Hat Yai Junction'}],
-        #                     '1E': [],
-        #                     '1F': [],
-        #                     '2A': [{'origin': 'Bang Sue Junction', 'dest': 'Phetchaburi'}],
-        #                     '2B': [{'origin': 'Sala Ya', 'dest': 'Ratchaburi'},
-        #                            {'origin': 'Bang Saphan Yai', 'dest': 'Thung Song Junction'}],
-        #                     '2C': [{'origin': 'Sam Sen', 'dest': 'Nakhon Pathom'},
-        #                            {'origin': 'Hua Hin', 'dest': 'Hat Yai Junction'}],
-        #                     '2D': [{'origin': 'Ratchaburi', 'dest': 'Hat Yai Junction'}],
-        #                     '2E': [{'origin': 'Phattalung', 'dest': 'Hat Yai Junction'}],
-        #                     '2F': [{'origin': 'Bangkok', 'dest': 'Phetchaburi'},
-        #                            {'origin': 'Hua Hin', 'dest': 'Hat Yai Junction'}],
-        #                     '2G': [],
-        #                     '2H': []},
-        #                     station_indexes)
         result = show_seats(copy.deepcopy(train_seats), station_indexes)
         correct_output = "1A: [Bangkok(0)-Nakhon Pathom(5)], [Ratchaburi(6)-Hua Hin(8)],\n" \
                          "1B: [Bangkok(0)-Hua Hin(8)],\n" \
@@ -219,8 +199,20 @@ class TestManageTrain(unittest.TestCase):
         correct_output['1A'].pop(0)
         self.assertDictEqual(demo_train_seats, correct_output)
 
-    def test_cancel(self):
-        pass
+    @patch('sys.stdout', new_callable=io.StringIO)
+    @patch('builtins.input', side_effect=['1G', '1E', 2, 13])
+    def test_cancel(self, _input, output):
+        demo_train_seats = copy.deepcopy(train_seats)
+        correct_train_seats = copy.deepcopy(train_seats)
+        val_returned = cancel(demo_train_seats, station_indexes)
+        correct_output = "Seats are ['1A', '1B', '1C', '1D', '1E', '1F', '2A', '2B', '2C', '2D', '2E', '2F', '2G','2H']\n" \
+                         "Invalid seat.\n" \
+                         "Tickets issued at 1E: \n" \
+                         "Ticket does not exist at 1E\n"
+        similarily = SequenceMatcher(None, output.getvalue(), correct_output).ratio()
+        self.assertGreaterEqual(similarily, 0.8)
+        self.assertIs(val_returned, None)
+        self.assertDictEqual(demo_train_seats, correct_train_seats)
 
     def test_show_ticket_prices(self):
         pass
