@@ -28,6 +28,18 @@ class TestManageTrain(unittest.TestCase):
         self.assertEqual(output.getvalue(), correct_output, 'Display outputs are not equal')
         self.assertEqual(result, 2, 'Return value is not equal')
 
+    def test_get_station_index(self):
+        for i in range(TOTAL_NUM_STATIONS):
+            station_name = list(station_indexes.keys())[i]
+            output = get_station_index(station_indexes, station_name)
+            self.assertEqual(i, output, f'Return value {i+1} is not equal')
+
+    def test_get_station_name(self):
+        for i in range(TOTAL_NUM_STATIONS):
+            station_name = list(station_indexes.keys())[i]
+            output = get_station_name(station_indexes, i)
+            self.assertEqual(station_name, output, f'Return value {i+1} is not equal')
+
     @patch('sys.stdout', new_callable=io.StringIO)
     def test_show_seats(self, output):
         result = show_seats(copy.deepcopy(train_seats), station_indexes)
@@ -47,18 +59,6 @@ class TestManageTrain(unittest.TestCase):
                          "2H: \n"
         similarily = SequenceMatcher(None, output.getvalue(), correct_output).ratio()
         self.assertGreaterEqual(similarily, 0.8, 'Percentage of correctness belows 0.8')
-
-    def test_get_station_index(self):
-        for i in range(TOTAL_NUM_STATIONS):
-            station_name = list(station_indexes.keys())[i]
-            output = get_station_index(station_indexes, station_name)
-            self.assertEqual(i, output, f'Return value {i+1} is not equal')
-
-    def test_get_station_name(self):
-        for i in range(TOTAL_NUM_STATIONS):
-            station_name = list(station_indexes.keys())[i]
-            output = get_station_name(station_indexes, i)
-            self.assertEqual(station_name, output, f'Return value {i+1} is not equal')
 
     def test_check_reserved_routes(self):
         # base case
@@ -99,8 +99,14 @@ class TestManageTrain(unittest.TestCase):
                          f"Available seats: {available_seat}\n" \
                          f"Invalid seat.\n" \
                          f"Available seats: {available_seat}\n"
-        similarily = SequenceMatcher(None, output.getvalue(), correct_output).ratio()
-        self.assertGreaterEqual(similarily, 0.8, 'Percentage of correctness belows 0.8')
+        correct_output2 = f"Invalid seat.\n" \
+                          f"Invalid seat.\n" \
+                          f"Invalid seat.\n" \
+
+        similarity = SequenceMatcher(None, output.getvalue(), correct_output).ratio()
+        similarity2 = SequenceMatcher(None, output.getvalue(), correct_output2).ratio()
+        is_pass = (similarity >= 0.8) or (similarity2 >= 0.8)
+        self.assertTrue(is_pass, 'Percentage of correctness belows 0.8')
 
     def test_update_seat(self):
         # base case
@@ -133,16 +139,6 @@ class TestManageTrain(unittest.TestCase):
                                   1, 2, 2)
         self.assertEqual(output, 60, 'Return value is not equal')
 
-    def test_check_available_seats(self):
-        output = check_available_seats(copy.deepcopy(train_seats), station_indexes, 0, 1)
-        self.assertListEqual(output, ['1E', '1F', '2A', '2B', '2D', '2E', '2G', '2H'], 'Return List are not equal')
-        output = check_available_seats(copy.deepcopy(train_seats), station_indexes, 0, 3)
-        self.assertListEqual(output, ['1E', '1F', '2B', '2D', '2E', '2G', '2H'], 'Return List are not equal')
-        output = check_available_seats(copy.deepcopy(train_seats), station_indexes, 0, 6)
-        self.assertListEqual(output, ['1E', '1F', '2E', '2G', '2H'], 'Return List are not equal')
-        output = check_available_seats(copy.deepcopy(train_seats), station_indexes, 0, 14)
-        self.assertListEqual(output, ['1E', '1F', '2G', '2H'], 'Return List are not equal')
-
     @patch('sys.stdout', new_callable=io.StringIO)
     @patch('builtins.input', side_effect=[10, -1, 15, 9, 13, '1B'])
     def test_reserve(self, _input, output):
@@ -174,8 +170,16 @@ class TestManageTrain(unittest.TestCase):
                          "Invalid seat.\n" \
                          "Invalid seat.\n" \
                          "Invalid seat.\n"
-        similarily = SequenceMatcher(None, output.getvalue(), correct_output).ratio()
-        self.assertGreaterEqual(similarily, 0.9, 'Percentage of correctness belows 0.9')
+        correct_output2 = "Invalid seat.\n" \
+                          "Invalid seat.\n" \
+                          "Invalid seat.\n" \
+                          "Invalid seat.\n" \
+                          "Invalid seat.\n" \
+                          "Invalid seat.\n"
+        similarity = SequenceMatcher(None, output.getvalue(), correct_output).ratio()
+        similarity2 = SequenceMatcher(None, output.getvalue(), correct_output2).ratio()
+        is_pass = (similarity >= 0.9) or (similarity2 >= 0.9)
+        self.assertTrue(is_pass, 'Percentage of correctness belows 0.9')
         self.assertEqual(result, '2A', 'Return value is not equal')
 
     def test_remove_ticket(self):
@@ -255,24 +259,11 @@ class TestManageTrain(unittest.TestCase):
     def test_clear_tickets(self, output):
         demo_train_seats = copy.deepcopy(train_seats)
         correct_train_seats = copy.deepcopy(train_seats)
+        clear_tickets(train_seats=demo_train_seats)
         for seat_id in correct_train_seats.keys():
             correct_train_seats[seat_id] = []
-        clear_tickets(demo_train_seats)
-        correct_output = "After clearing all tickets\n" \
-                         "1A: \n" \
-                         "1B: \n" \
-                         "1C: \n" \
-                         "1D: \n" \
-                         "1E: \n" \
-                         "1F: \n" \
-                         "2A: \n" \
-                         "2B: \n" \
-                         "2C: \n" \
-                         "2D: \n" \
-                         "2E: \n" \
-                         "2F: \n" \
-                         "2G: \n" \
-                         "2H: \n"
-        similarily = SequenceMatcher(None, output.getvalue(), correct_output).ratio()
-        self.assertGreaterEqual(similarily, 0.8, 'Percentage of correctness belows 0.8')
         self.assertDictEqual(demo_train_seats, correct_train_seats, 'train_seats content unmatched')
+
+
+if __name__ == '__main__':
+    unittest.main()
