@@ -77,7 +77,7 @@ class TestManageHotel(unittest.TestCase):
                       "|---|---|---|---|\n"
         likeness = SequenceMatcher(None, output.getvalue(),
                                    cor_output1).ratio()
-        self.assertGreaterEqual(likeness, 0.85, "Output is not correct")
+        self.assertGreaterEqual(likeness, 0.8, "Output is not correct")
 
     @patch('sys.stdout', new_callable=io.StringIO)
     def test_draw_booking_2(self, output):
@@ -92,7 +92,7 @@ class TestManageHotel(unittest.TestCase):
                       "|---|---|---|---|\n"
         likeness = SequenceMatcher(None, output.getvalue(),
                                    cor_output1).ratio()
-        self.assertGreaterEqual(likeness, 0.85, "Output is not correct")
+        self.assertGreaterEqual(likeness, 0.8, "Output is not correct")
 
     @patch('sys.stdout', new_callable=io.StringIO)
     def test_draw_booking_3(self, output):
@@ -130,7 +130,7 @@ class TestManageHotel(unittest.TestCase):
         display_available_rooms(curr_book)
         cor_output = "Available rooms: (1,2), (1,3), (2,1), (2,2),"
         likeness = SequenceMatcher(None, output.getvalue(), cor_output).ratio()
-        self.assertGreaterEqual(likeness, 0.85, "Output is not correct")
+        self.assertGreaterEqual(likeness, 0.8, "Output is not correct")
 
     @patch('sys.stdout', new_callable=io.StringIO)
     def test_display_available_rooms_2(self, output):
@@ -138,7 +138,7 @@ class TestManageHotel(unittest.TestCase):
         display_available_rooms(curr_book)
         cor_output = "Available rooms: (1,1), (1,2), (1,3), (2,1), (2,2), (2,3),"
         likeness = SequenceMatcher(None, output.getvalue(), cor_output).ratio()
-        self.assertGreaterEqual(likeness, 0.85, "Output is not correct")
+        self.assertGreaterEqual(likeness, 0.8, "Output is not correct")
 
     @patch('sys.stdout', new_callable=io.StringIO)
     def test_display_available_rooms_3(self, output):
@@ -148,7 +148,7 @@ class TestManageHotel(unittest.TestCase):
                      "(2,1), (2,2), (2,3), (2,4), (2,5), " \
                      "(3,1), (3,2), (3,3), (3,4), (3,5)"
         likeness = SequenceMatcher(None, output.getvalue(), cor_output).ratio()
-        self.assertGreaterEqual(likeness, 0.85, "Output is not correct")
+        self.assertGreaterEqual(likeness, 0.8, "Output is not correct")
 
     def test_get_booked_room_info_by_floor(self):
         room_l1, guest_l1 = get_booking_by_date(self.booking_table, 2, 3, 19)
@@ -198,25 +198,108 @@ class TestManageHotel(unittest.TestCase):
 
     def test_get_daily_revenue(self):
         rev = get_daily_revenue(self.booking_table, 13, 15)
-        self.assertEqual(rev, [2500, 5000, 2500])
+        self.assertEqual(rev, [2500, 5000, 2500], "Incorrect daily rev. [1]")
 
         rev = get_daily_revenue(self.booking_table, 19, 19)
-        self.assertEqual(rev, [5000])
+        self.assertEqual(rev, [5000], "Incorrect daily rev. [2]")
 
         rev = get_daily_revenue(self.booking_table, 10, 12)
-        self.assertEqual(rev, [0, 0, 0])
+        self.assertEqual(rev, [0, 0, 0], "Incorrect daily rev. [3]")
 
         rev = get_daily_revenue(self.booking_table2, 20, 22)
-        self.assertEqual(rev, [2500, 0, 2500])
+        self.assertEqual(rev, [2500, 0, 2500], "Incorrect daily rev. [4]")
 
     def test_get_floor_revenue_by_date(self):
-        pass
+        rev = get_floor_revenue_by_date(self.booking_table, 2, 14)
+        self.assertEqual(rev, [2500, 2500], "Incorrect floor rev. [1]")
+
+        rev = get_floor_revenue_by_date(self.booking_table, 2, 20)
+        self.assertEqual(rev, [0, 2500], "Incorrect floor rev. [2]")
+
+        rev = get_floor_revenue_by_date(self.booking_table, 2, 1)
+        self.assertEqual(rev, [0, 0], "Incorrect floor rev. [3]")
+
+        rev = get_floor_revenue_by_date(self.booking_table2, 3, 4)
+        self.assertEqual(rev, [0, 0, 5000], "Incorrect floor rev. [4]")
 
     def test_get_room_revenue_by_date(self):
-        pass
+        rev = get_room_revenue_by_date(self.booking_table, 3, 20)
+        self.assertEqual(rev, [0, 2500, 0], "Incorrect room rev. [1]")
 
-    def test_operate(self):
-        pass
+        rev = get_room_revenue_by_date(self.booking_table, 3, 19)
+        self.assertEqual(rev, [2500, 2500, 0], "Incorrect room rev. [2]")
+
+        rev = get_room_revenue_by_date(self.booking_table, 3, 1)
+        self.assertEqual(rev, [0, 0, 0], "Incorrect room rev. [3]")
+
+        rev = get_room_revenue_by_date(self.booking_table2, 5, 3)
+        self.assertEqual(rev, [0, 0, 0, 2500, 2500], "Incorrect room rev. [4]")
+
+    @patch('sys.stdout', new_callable=io.StringIO)
+    @patch('builtins.input', side_effect=[18])
+    def test_operate_choice_2_1(self, _input, output):
+        operate(self.booking_table, 2, 3, 2)
+        cor_output = "Room (1, 1, Jeff),\nRoom (2, 3, Jack),"
+        likeness = SequenceMatcher(None, output.getvalue(), cor_output).ratio()
+        self.assertGreaterEqual(likeness, 0.8, "Output for choice 2 is not correct. [1]")
+
+    @patch('sys.stdout', new_callable=io.StringIO)
+    @patch('builtins.input', side_effect=[25])
+    def test_operate_choice_2_2(self, _input, output):
+        operate(self.booking_table2, 3, 5, 2)
+        cor_output = "Room (3, 1, Kate),"
+        likeness = SequenceMatcher(None, output.getvalue(), cor_output).ratio()
+        self.assertGreaterEqual(likeness, 0.8, "Output for choice 2 is not correct. [2]")
+
+    @patch('sys.stdout', new_callable=io.StringIO)
+    @patch('builtins.input', side_effect=[19, 1])
+    def test_operate_choice_4_1(self, _input, output):
+        operate(self.booking_table, 2, 3, 4)
+        cor_output = "Room (1, 1, Jeff),"
+        likeness = SequenceMatcher(None, output.getvalue(), cor_output).ratio()
+        self.assertGreaterEqual(likeness, 0.8, "Output for choice 4 is not correct. [1]")
+
+    @patch('sys.stdout', new_callable=io.StringIO)
+    @patch('builtins.input', side_effect=[2, 3])
+    def test_operate_choice_4_2(self, _input, output):
+        operate(self.booking_table2, 3, 5, 4)
+        cor_output = "Room (3, 4, Korn),\nRoom (3, 5, Korn),"
+        likeness = SequenceMatcher(None, output.getvalue(), cor_output).ratio()
+        self.assertGreaterEqual(likeness, 0.8, "Output for choice 4 is not correct. [2]")
+
+    @patch('sys.stdout', new_callable=io.StringIO)
+    @patch('builtins.input', side_effect=[19, "James"])
+    def test_operate_choice_5_1(self, _input, output):
+        operate(self.booking_table, 2, 3, 5)
+        cor_output = "Room (2, 2, James),"
+        likeness = SequenceMatcher(None, output.getvalue(), cor_output).ratio()
+        self.assertGreaterEqual(likeness, 0.8, "Output for choice 5 is not correct. [1]")
+
+
+    @patch('sys.stdout', new_callable=io.StringIO)
+    @patch('builtins.input', side_effect=[22, "Jub"])
+    def test_operate_choice_5_2(self, _input, output):
+        operate(self.booking_table2, 3, 5, 5)
+        cor_output = "Room (2, 5, Jub),"
+        likeness = SequenceMatcher(None, output.getvalue(), cor_output).ratio()
+        self.assertGreaterEqual(likeness, 0.8, "Output for choice 5 is not correct. [2]")
+
+    @patch('sys.stdout', new_callable=io.StringIO)
+    @patch('builtins.input', side_effect=[18, 20])
+    def test_operate_choice_6_1(self, _input, output):
+        operate(self.booking_table, 2, 3, 6)
+        cor_output = "18: 5000 Baht\n19: 5000 Baht\n20: 2500 Baht"
+        likeness = SequenceMatcher(None, output.getvalue(), cor_output).ratio()
+        self.assertGreaterEqual(likeness, 0.8, "Output for choice 6 is not correct. [1]")
+
+    @patch('sys.stdout', new_callable=io.StringIO)
+    @patch('builtins.input', side_effect=[22, 25])
+    def test_operate_choice_6_2(self, _input, output):
+        operate(self.booking_table, 3, 5, 6)
+        cor_output = "22: 2500 Baht\n23: 0 Baht\n24: 0 Baht\n25: 2500 Baht"
+        likeness = SequenceMatcher(None, output.getvalue(), cor_output).ratio()
+        self.assertGreaterEqual(likeness, 0.8, "Output for choice 6 is not correct. [2]")
+
 
 
 if __name__ == '__main__':
