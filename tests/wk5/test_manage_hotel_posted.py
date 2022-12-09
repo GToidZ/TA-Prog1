@@ -43,6 +43,11 @@ class TestManageHotel(unittest.TestCase):
                          "Room list is not valid [2]")
         self.assertEqual(guest_l2, [['', 'John', ''], ['', '', 'Jack']],
                          "Guest list is not valid [2]")
+        room_l3, guest_l3 = get_booking_by_date(self.booking_table, 2, 3, 12)
+        self.assertEqual(room_l3, [[0, 0, 0], [0, 0, 0]],
+                         "Room list is not valid [3]")
+        self.assertEqual(guest_l3, [['', '', ''], ['', '', '']],
+                         "Guest list is not valid [3]")
 
     @patch('sys.stdout', new_callable=io.StringIO)
     def test_draw_booking_1(self, output):
@@ -73,9 +78,15 @@ class TestManageHotel(unittest.TestCase):
         self.assertGreaterEqual(likeness, 0.85, "Output is not correct")
 
     def test_get_booked_room_info_by_date(self):
-        room_l1, guest_l1 = get_booking_by_date(self.booking_table, 2, 3, 19)
+        room_l1, guest_l1 = get_booking_by_date(self.booking_table, 2, 3, 18)
         book_info = get_booked_room_info_by_date(room_l1, guest_l1)
-        self.assertEqual()
+        self.assertEqual(book_info, [[1, 1, "Jeff"], [2, 3, "Jack"]])
+        room_l2, guest_l2 = get_booking_by_date(self.booking_table, 2, 3, 14)
+        book_info2 = get_booked_room_info_by_date(room_l2, guest_l2)
+        self.assertEqual(book_info2, [[1, 2, "John"], [2, 3, "Jack"]])
+        room_l3, guest_l3 = get_booking_by_date(self.booking_table, 2, 3, 12)
+        book_info3 = get_booked_room_info_by_date(room_l3, guest_l3)
+        self.assertEqual(book_info3, [])
 
     def test_display_available_rooms(self):
         pass
