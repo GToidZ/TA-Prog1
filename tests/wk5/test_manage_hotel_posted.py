@@ -80,16 +80,29 @@ class TestManageHotel(unittest.TestCase):
     def test_get_booked_room_info_by_date(self):
         room_l1, guest_l1 = get_booking_by_date(self.booking_table, 2, 3, 18)
         book_info = get_booked_room_info_by_date(room_l1, guest_l1)
-        self.assertEqual(book_info, [[1, 1, "Jeff"], [2, 3, "Jack"]])
+        self.assertEqual(book_info, [[1, 1, "Jeff"], [2, 3, "Jack"]], "Room info is not correct.")
         room_l2, guest_l2 = get_booking_by_date(self.booking_table, 2, 3, 14)
         book_info2 = get_booked_room_info_by_date(room_l2, guest_l2)
-        self.assertEqual(book_info2, [[1, 2, "John"], [2, 3, "Jack"]])
+        self.assertEqual(book_info2, [[1, 2, "John"], [2, 3, "Jack"]], "Room info is not correct.")
         room_l3, guest_l3 = get_booking_by_date(self.booking_table, 2, 3, 12)
         book_info3 = get_booked_room_info_by_date(room_l3, guest_l3)
-        self.assertEqual(book_info3, [])
+        self.assertEqual(book_info3, [], "Room info is not correct.")
 
-    def test_display_available_rooms(self):
-        pass
+    @patch('sys.stdout', new_callable=io.StringIO)
+    def test_display_available_rooms_1(self, output):
+        curr_book, _ = get_booking_by_date(self.booking_table, 2, 3, 18)
+        display_available_rooms(curr_book)
+        cor_output = "Available rooms: (1,2), (1,3), (2,1), (2,2),"
+        likeness = SequenceMatcher(None, output.getvalue(), cor_output).ratio()
+        self.assertGreaterEqual(likeness, 0.85, "Output is not correct")
+
+    @patch('sys.stdout', new_callable=io.StringIO)
+    def test_display_available_rooms_2(self, output):
+        curr_book, _ = get_booking_by_date(self.booking_table, 2, 3, 12)
+        display_available_rooms(curr_book)
+        cor_output = "Available rooms: (1,1), (1,2), (1,3), (2,1), (2,2), (2,3),"
+        likeness = SequenceMatcher(None, output.getvalue(), cor_output).ratio()
+        self.assertGreaterEqual(likeness, 0.85, "Output is not correct")
 
     def test_get_booked_room_info_by_floor(self):
         pass
