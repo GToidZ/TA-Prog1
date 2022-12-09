@@ -1,6 +1,8 @@
 import unittest
+import io
 from unittest.mock import patch
 from manage_hotel_posted import *
+from difflib import SequenceMatcher
 
 
 class TestManageHotel(unittest.TestCase):
@@ -32,18 +34,48 @@ class TestManageHotel(unittest.TestCase):
 
     def test_get_book_by_date(self):
         room_l1, guest_l1 = get_booking_by_date(self.booking_table, 2, 3, 19)
-        self.assertEqual(room_l1, [[1, 0, 0], [0, 1, 0]], "Room list is not valid [1]")
-        self.assertEqual(guest_l1, [['Jeff', '', ''], ['', 'James', '']], "Guest list is not valid [1]")
+        self.assertEqual(room_l1, [[1, 0, 0], [0, 1, 0]],
+                         "Room list is not valid [1]")
+        self.assertEqual(guest_l1, [['Jeff', '', ''], ['', 'James', '']],
+                         "Guest list is not valid [1]")
         room_l2, guest_l2 = get_booking_by_date(self.booking_table, 2, 3, 14)
-        self.assertEqual(room_l2, [[0, 1, 0], [0, 0, 1]], "Room list is not valid [2]")
-        self.assertEqual(guest_l2, [['', 'John', ''], ['', '', 'Jack']], "Guest list is not valid [2]")
+        self.assertEqual(room_l2, [[0, 1, 0], [0, 0, 1]],
+                         "Room list is not valid [2]")
+        self.assertEqual(guest_l2, [['', 'John', ''], ['', '', 'Jack']],
+                         "Guest list is not valid [2]")
 
-    def test_draw_booking(self):
-        room_l1, _ = get_booking_by_date(self.booking_table, 2, 3, 19)
+    @patch('sys.stdout', new_callable=io.StringIO)
+    def test_draw_booking_1(self, output):
+        current_book, _ = get_booking_by_date(self.booking_table, 2, 3, 19)
+        draw_booking(current_book)
+        cor_output1 = "|---|---|---|---|\n" \
+                      "|   | 1 | 2 | 3 |\n" \
+                      "|---|---|---|---|\n" \
+                      "| 1 | X |   |   |\n" \
+                      "|---|---|---|---|\n" \
+                      "| 2 |   | X |   |\n" \
+                      "|---|---|---|---|\n"
+        likeness = SequenceMatcher(None, output.getvalue(), cor_output1).ratio()
+        self.assertGreaterEqual(likeness, 0.85, "Output is not correct")
 
+    @patch('sys.stdout', new_callable=io.StringIO)
+    def test_draw_booking_2(self, output):
+        current_book, _ = get_booking_by_date(self.booking_table, 2, 3, 12)
+        draw_booking(current_book)
+        cor_output1 = "|---|---|---|---|\n" \
+                      "|   | 1 | 2 | 3 |\n" \
+                      "|---|---|---|---|\n" \
+                      "| 1 |   |   |   |\n" \
+                      "|---|---|---|---|\n" \
+                      "| 2 |   |   |   |\n" \
+                      "|---|---|---|---|\n"
+        likeness = SequenceMatcher(None, output.getvalue(), cor_output1).ratio()
+        self.assertGreaterEqual(likeness, 0.85, "Output is not correct")
 
     def test_get_booked_room_info_by_date(self):
-        pass
+        room_l1, guest_l1 = get_booking_by_date(self.booking_table, 2, 3, 19)
+        book_info = get_booked_room_info_by_date(room_l1, guest_l1)
+        self.assertEqual()
 
     def test_display_available_rooms(self):
         pass

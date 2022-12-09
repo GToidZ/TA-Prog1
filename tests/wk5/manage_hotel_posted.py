@@ -427,7 +427,7 @@ def operate(booking_table, num_floors, num_rooms, choice):
 
 num_floors = 2
 num_rooms = 3
-booking_table = read_file('hotel_small.txt')
+booking_table = [[1, 1, "Jeff", 18, 20], [1, 2, "John", 13, 15], [2, 2, "James", 19, 21], [2, 3, "Jack", 14, 19]]
 # print(booking_table)
 
 # Uncomment below if you want to test with hotel.txt
@@ -435,16 +435,16 @@ booking_table = read_file('hotel_small.txt')
 # num_rooms = 5
 # booking_table = read_file('hotel.txt')
 
-print('1. Show booked rooms by date')
-print('2. Show guest names by date')
-print('3. Show available rooms by date')
-print('4. Show booked rooms by floor')
-print('5. Search booked room by name')
-print('6. Show daily revenue')
-print('7. Show floor revenue by date')
-print('8. Show room-section revenue by date')
-choice = int(input('Enter choice: '))
-operate(booking_table, num_floors, num_rooms, choice)
+# print('1. Show booked rooms by date')
+# print('2. Show guest names by date')
+# print('3. Show available rooms by date')
+# print('4. Show booked rooms by floor')
+# print('5. Search booked room by name')
+# print('6. Show daily revenue')
+# print('7. Show floor revenue by date')
+# print('8. Show room-section revenue by date')
+# choice = int(input('Enter choice: '))
+# operate(booking_table, num_floors, num_rooms, choice)
 
 if __name__ == '__main__':
     import doctest
