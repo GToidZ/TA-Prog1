@@ -105,10 +105,25 @@ class TestManageHotel(unittest.TestCase):
         self.assertGreaterEqual(likeness, 0.85, "Output is not correct")
 
     def test_get_booked_room_info_by_floor(self):
-        pass
+        room_l1, guest_l1 = get_booking_by_date(self.booking_table, 2, 3, 19)
+        book_info = get_booked_room_info_by_floor(room_l1, guest_l1, 1)
+        self.assertEqual(book_info, [[1, 1, "Jeff"]])
+        book_info = get_booked_room_info_by_floor(room_l1, guest_l1, 2)
+        self.assertEqual(book_info, [[2, 2, "James"]])
+
+        room_l1, guest_l1 = get_booking_by_date(self.booking_table, 2, 3, 12)
+        book_info = get_booked_room_info_by_floor(room_l1, guest_l1, 1)
+        self.assertEqual(book_info, [])
+        book_info = get_booked_room_info_by_floor(room_l1, guest_l1, 2)
+        self.assertEqual(book_info, [])
 
     def test_get_booked_room_info_by_name(self):
-        pass
+        room_l1, guest_l1 = get_booking_by_date(self.booking_table, 2, 3, 19)
+        book_info = get_booked_room_info_by_name(room_l1, guest_l1, "Jeff")
+        self.assertEqual(book_info, [[1, 1, "Jeff"]])
+        book_info = get_booked_room_info_by_name(room_l1, guest_l1, "Jummeng")
+        self.assertEqual(book_info, [])
+
 
     def test_count_booked_room_by_date(self):
         pass
