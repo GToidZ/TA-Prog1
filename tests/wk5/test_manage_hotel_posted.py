@@ -1,19 +1,46 @@
 import unittest
+from unittest.mock import patch
 from manage_hotel_posted import *
 
 
 class TestManageHotel(unittest.TestCase):
+    def setUp(self) -> None:
+        self.booking_table = [[1, 1, "Jeff", 18, 20], [1, 2, "John", 13, 15],
+                              [2, 2, "James", 19, 21], [2, 3, "Jack", 14, 19]]
+
     def test_init_str(self):
-        pass
+        str_1 = initialize_str_nested_list(2, 3)
+        self.assertEqual(str_1, [['', '', ''], ['', '', '']],
+                         "Initial string [1] is not correct")
+        str_2 = initialize_str_nested_list(0, 0)
+        self.assertEqual(str_2, [], "Initial string [2] is not correct")
+        str_3 = initialize_str_nested_list(3, 4)
+        self.assertEqual(str_3, [['', '', '', ''], ['', '', '', ''],
+                                 ['', '', '', '']],
+                         "Initial string [3] is not correct")
 
     def test_init_int(self):
-        pass
+        int_1 = initialize_int_nested_list(2, 3)
+        self.assertEqual(int_1, [[0, 0, 0], [0, 0, 0]],
+                         "Initial int [1] is not correct")
+        int_2 = initialize_int_nested_list(0, 0)
+        self.assertEqual(int_2, [], "Initial int [2] is not correct")
+        int_3 = initialize_int_nested_list(3, 4)
+        self.assertEqual(int_3, [[0, 0, 0, 0], [0, 0, 0, 0],
+                                 [0, 0, 0, 0]],
+                         "Initial int [3] is not correct")
 
     def test_get_book_by_date(self):
-        pass
+        room_l1, guest_l1 = get_booking_by_date(self.booking_table, 2, 3, 19)
+        self.assertEqual(room_l1, [[1, 0, 0], [0, 1, 0]], "Room list is not valid [1]")
+        self.assertEqual(guest_l1, [['Jeff', '', ''], ['', 'James', '']], "Guest list is not valid [1]")
+        room_l2, guest_l2 = get_booking_by_date(self.booking_table, 2, 3, 14)
+        self.assertEqual(room_l2, [[0, 1, 0], [0, 0, 1]], "Room list is not valid [2]")
+        self.assertEqual(guest_l2, [['', 'John', ''], ['', '', 'Jack']], "Guest list is not valid [2]")
 
     def test_draw_booking(self):
-        pass
+        room_l1, _ = get_booking_by_date(self.booking_table, 2, 3, 19)
+
 
     def test_get_booked_room_info_by_date(self):
         pass
@@ -41,3 +68,7 @@ class TestManageHotel(unittest.TestCase):
 
     def test_operate(self):
         pass
+
+
+if __name__ == '__main__':
+    unittest.main()
